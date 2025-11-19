@@ -8,10 +8,7 @@ import lombok.Setter;
 import org.example.crmiranchito.enums.AreaMesa;
 import org.example.crmiranchito.enums.EstadoMesa;
 import org.example.crmiranchito.model.Auditable;
-import org.openxava.annotations.Required;
-import org.openxava.annotations.Tab;
-import org.openxava.annotations.Tabs;
-import org.openxava.annotations.View;
+import org.openxava.annotations.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -19,11 +16,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "mesa")
-@View(members = " Mesa { numero; capacidad; area; estado }")
-@Tabs(@Tab(properties = "numero, capacidad, area, estado"))
+@Tab(properties = "numero, capacidad, area, estado")
+@View(members =
+"Datos Mesa { numero; capacidad; area; estado } " +
+"Reservas { reservas } ")
 
 
 public class Mesa extends Auditable {
@@ -37,7 +33,6 @@ public class Mesa extends Auditable {
     private String numero;
 
     @Required
-    @Column(nullable = false)
     private Integer capacidad;
 
     @Required
@@ -49,5 +44,6 @@ public class Mesa extends Auditable {
     private EstadoMesa estado;
 
     @OneToMany(mappedBy = "mesa", fetch = FetchType.LAZY)
+    @ListProperties("fechaReserva, horaReserva, cliente.nombre, estado")
     private List<Reserva> reservas;
 }

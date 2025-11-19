@@ -3,6 +3,7 @@ package org.example.crmiranchito.model.cliente;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.crmiranchito.enums.EstadoCliente;
 import org.example.crmiranchito.model.Auditable;
 import org.example.crmiranchito.model.interaccion.Interaccion;
 import org.example.crmiranchito.model.promocion.Promocion;
@@ -16,8 +17,10 @@ import java.util.List;
 @Getter
 @Setter
 
-@Tabs(@Tab(properties = "nombre, email, telefono"))
-@View(members = "Datos Personales { nombre; email; telefono; preferencias }")
+@Tab(properties = "nombre, correo, telefono, estado")
+@View(members =
+"Datos Personales { nombre; correo; telefono; fechaNacimiento; preferencias } " +
+"Estado { estado } ")
 
 public class Cliente extends Auditable {
 
@@ -26,6 +29,7 @@ public class Cliente extends Auditable {
     private Long Id;
 
     @Required
+    @Column(length = 80)
     private String nombre;
 
     @Required
@@ -42,6 +46,10 @@ public class Cliente extends Auditable {
     @Stereotype("MEMO")
     private String preferencias;
 
+    @Enumerated(EnumType.STRING)
+    @ReadOnly
+    private EstadoCliente estado = EstadoCliente.ACTIVO;
+
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
     private List<Reserva> reservas;
 
@@ -51,7 +59,5 @@ public class Cliente extends Auditable {
     @ManyToMany(mappedBy = "clientes", fetch = FetchType.LAZY)
     private List<Promocion> promociones;
 
-    @Column(length= 20)
-    private String estado;
 
 }

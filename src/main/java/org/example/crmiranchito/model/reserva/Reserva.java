@@ -8,12 +8,12 @@ import org.example.crmiranchito.listeners.ReservaListener;
 import org.example.crmiranchito.model.Auditable;
 import org.example.crmiranchito.model.usuario.Usuario;
 import org.example.crmiranchito.model.cliente.Cliente;
-import org.example.crmiranchito.servicio.ReservaService;
 import org.openxava.annotations.*;
 
-import javax.inject.Inject;
+import javax.persistence.PrePersist;
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,13 +22,15 @@ import java.time.LocalTime;
 @EntityListeners(ReservaListener.class)
 @Getter
 @Setter
-@View(name = "Reserva", members =
+
+@Tab(properties = "cliente.nombre, fechaReserva, horaReserva, cantidadPersonas, mesa.numero, estado")
+@View(members =
 "Cliente { cliente } " +
 "Reserva { fechaReserva; horaReserva; cantidadPersonas; canal } " +
 "Mesa { mesa } " +
-"Control { estado; usuario; fechaCreacion }")
+"Control { estado; usuario; createdOn }")
 
-@Tabs(@Tab(properties = "cliente.nombre, fechaReserva, horaReserva, cantidadPersonas, mesa.numero, estado "))
+
 
 public class Reserva extends Auditable {
 
@@ -47,6 +49,7 @@ public class Reserva extends Auditable {
     private LocalTime horaReserva;
 
     @Required
+    @Min(1)
     private Integer cantidadPersonas;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -75,14 +78,12 @@ public class Reserva extends Auditable {
                 .isAfter(LocalDateTime.now());
     }
 
-    @AssertTrue(message = "Cantidad de personas debe de ser > 0 y no exceda la capacidad")
+    @AssertTrue(message = "Cantidad excede capacidad de la mesa")
     private boolean isCantidadPersonasValida() {
-        if (cantidadPersonas == null || cantidadPersonas <= 0)
-            return false;
-        if (mesa != null && mesa.getCapacidad() != null)
-            return cantidadPersonas <= mesa.getCapacidad();
-        return true;
-    }
+        return mesa == null || mesa.getCapacidad() == null ||
+            cantidadPersonas == null ||
+                    cantidadPersonas <= mesa.getCapacidad();
+        }
 }
 
 

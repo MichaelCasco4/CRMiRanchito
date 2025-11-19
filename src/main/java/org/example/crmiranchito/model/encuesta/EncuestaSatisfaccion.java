@@ -10,18 +10,21 @@ import org.hibernate.validator.constraints.Range;
 import org.openxava.annotations.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.AssertTrue;
 import java.time.LocalDate;
 
 @Entity
 @Getter
 @Setter
+
+@Tab(properties = "reserva.id, cliente.nombre, calificacionGeneral, fechaRespuesta, alertaInsatisfaccion")
 @View(members =
 "Datos { reserva; cliente } " +
 "Puntuacion { calificacionGeneral; comida; atencion; tiempoServicio; ambiente; recomendaciones } " +
 "Comentario { comentario } " +
 "Estado { fechaRespuesta; alertaInsatisfaccion } " )
 
-@Tabs(@Tab(properties = "reserva.id, cliente.nombre, calificacionGeneral, fechaRespuesta, alertaInsatisfaccion "))
+
 
 public class EncuestaSatisfaccion extends Auditable {
 
@@ -31,10 +34,12 @@ public class EncuestaSatisfaccion extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Required
+    @DescriptionsList
     private Reserva reserva;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Required
+    @DescriptionsList
     private Cliente cliente;
 
     @Range(min = 1, max = 5)
@@ -44,6 +49,10 @@ public class EncuestaSatisfaccion extends Auditable {
     @Range(min = 1, max = 5)
     @Required
     private Integer comida;
+
+    @Range(min = 1, max = 5)
+    @Required
+    private Integer atencion;
 
     @Range(min = 1, max = 5)
     @Required
@@ -63,21 +72,31 @@ public class EncuestaSatisfaccion extends Auditable {
     @ReadOnly
     private Boolean alertaInsatisfaccion;
 
-    @PreUpdate
-    @PrePersist
-    private void calcularAlerta(){
 
-        alertaInsatisfaccion = calificacionGeneral != null && calificacionGeneral <= 2;
+    @PrePersist
+    @PreUpdate
+    protected void calcularLogica(){
+        this.fechaRespuesta = LocalDate.now();
+
+        int puntaje = 0;
+        int totalCampos = 0;
+
+        if (calificacionGeneral != null) { puntaje += calificacionGeneral; totalCampos++; }
+        if (comida != null) { puntaje += comida; totalCampos++; }
+        if (atencion != null) { puntaje += atencion; totalCampos++; }
+        if (tiempoServicio != null) { puntaje += tiempoServicio; totalCampos++; }
+        if (ambiente != null) { puntaje += ambiente; totalCampos++; }
+
+        double promedio = totalCampos > 0 ? (double) puntaje / totalCampos : 5;
+
+        this.alertaInsatisfaccion = promedio <= 2.5;
     }
 
-    @PrePersist
-    @PreUpdate
-    private void validarClienteReserva(){
 
-        if(reserva != null && cliente != null && reserva.getCliente() != null){
-            if(!reserva.getCliente().getId().equals(cliente.getId())){
-                throw new javax.validation.ValidationException("El cliente debe de coincidir con la reserva ");
-            }
-        }
+    @AssertTrue(message = "El cliente debe de coincidir con el cliente de la reserva")
+    private boolean isClienteCorrecto() {
+        return reserva == null || cliente == null ||
+                reserva.getCliente().getId().equals(cliente.getId());
     }
 }
+

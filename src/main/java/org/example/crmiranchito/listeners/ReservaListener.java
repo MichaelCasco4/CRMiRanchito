@@ -3,7 +3,6 @@ package org.example.crmiranchito.listeners;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.crmiranchito.model.reserva.Reserva;
-import org.example.crmiranchito.servicio.ReservaService;
 import org.openxava.jpa.XPersistence;
 
 import javax.inject.Inject;
@@ -18,22 +17,28 @@ public class ReservaListener {
     @PrePersist
     @PreUpdate
     public void validarDisponibilidad(Reserva reserva) {
+
+        String jpql = "SELECT r FROM Reserva r " +
+                "WHERE r.mesa = :mesa " +
+                "AND r.fechaReserva = :fecha " +
+                "AND r.horaReserva = :hora " +
+                "AND r.id <> :id " +
+                "AND  r.estado <> 'CANCELADA'";
+
         List<Reserva> reservas = XPersistence.getManager()
-                .createQuery("SELECT r FROM Reserva r " +
-                        "WHERE r.mesa = :mesa " +
-                        "AND r.fechaReserva = :fecha " +
-                        "AND r.estado <> 'CANCELADA'", Reserva.class)
+                .createQuery(jpql, Reserva.class)
                 .setParameter("mesa", reserva.getMesa())
                 .setParameter("fecha", reserva.getFechaReserva())
+                .setParameter("hora", reserva.getHoraReserva())
+                .setParameter("id", reserva.getId() == null ? -1 : reserva.getId())
                 .getResultList();
 
-        reservas.forEach(r -> {
+        if (reservas.isEmpty()) {
+            throw new javax.validation.ValidationException(
+                    "La mesa seleccionada ya esta reservada en ese momento"
+            );
+        }
 
-            if(r.getHoraReserva().equals(reserva.getHoraReserva())) {
-                throw new javax.validation.ValidationException(
-                        "La mesa ya esta reservada a esa hora "
-                );
-            }
-        });
+
     }
 }
