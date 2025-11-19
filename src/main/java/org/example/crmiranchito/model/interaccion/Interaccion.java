@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.crmiranchito.enums.TipoInteraccion;
 import org.example.crmiranchito.model.Auditable;
-import org.example.crmiranchito.model.comunicacion.CanalComunicacionC;
+import org.example.crmiranchito.model.comunicacion.CanalComunicacion;
 import org.example.crmiranchito.model.cliente.Cliente;
 import org.openxava.annotations.*;
 
@@ -36,7 +36,7 @@ public class Interaccion extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Required
-    private CanalComunicacionC canal;
+    private CanalComunicacion canal;
 
     @Enumerated(EnumType.STRING)
     private TipoInteraccion tipo;

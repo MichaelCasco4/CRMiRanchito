@@ -1,6 +1,5 @@
 package org.example.crmiranchito.model.reserva;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,17 +15,20 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "mesa")
 @Tab(properties = "numero, capacidad, area, estado")
 @View(members =
-"Datos Mesa { numero; capacidad; area; estado } " +
-"Reservas { reservas } ")
+"Datos Mesa { numero; capacidad; area; estado } " )
 
 
 public class Mesa extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    @Column(name = "id")
+    private Long id;
 
     @Required
     @Column(nullable = false, unique = true)
@@ -43,7 +45,9 @@ public class Mesa extends Auditable {
     @Enumerated(EnumType.STRING)
     private EstadoMesa estado;
 
-    @OneToMany(mappedBy = "mesa", fetch = FetchType.LAZY)
-    @ListProperties("fechaReserva, horaReserva, cliente.nombre, estado")
-    private List<Reserva> reservas;
+    //@OneToMany(mappedBy = "mesa", fetch = FetchType.LAZY)
+    //@ListProperties("fechaReserva, horaReserva, cliente.nombre, estado")
+    //private List<Reserva> reservas;
+
+
 }

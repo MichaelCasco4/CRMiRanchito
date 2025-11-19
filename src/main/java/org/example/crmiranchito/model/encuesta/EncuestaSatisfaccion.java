@@ -13,18 +13,21 @@ import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
 import java.time.LocalDate;
 
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
+
 @Entity
 @Getter
 @Setter
 
-@Tab(properties = "reserva.id, cliente.nombre, calificacionGeneral, fechaRespuesta, alertaInsatisfaccion")
+@Tab(properties =
+" reserva.id, cliente.nombre, calificacionGeneral, fechaRespuesta, alertaInsatisfaccion")
 @View(members =
-"Datos { reserva; cliente } " +
+"Datos { reserva } " +
+"Cliente { cliente } " +
 "Puntuacion { calificacionGeneral; comida; atencion; tiempoServicio; ambiente; recomendaciones } " +
 "Comentario { comentario } " +
-"Estado { fechaRespuesta; alertaInsatisfaccion } " )
-
-
+"Estado { fechaRespuesta; alertaInsatisfaccion } ")
 
 public class EncuestaSatisfaccion extends Auditable {
 
@@ -34,12 +37,12 @@ public class EncuestaSatisfaccion extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Required
-    @DescriptionsList
+    @ReferenceView("Reserva")
     private Reserva reserva;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Required
-    @DescriptionsList
+    @ReadOnly
     private Cliente cliente;
 
     @Range(min = 1, max = 5)
@@ -67,28 +70,35 @@ public class EncuestaSatisfaccion extends Auditable {
     @Stereotype("MEMO")
     private  String comentario;
 
+    @ReadOnly
+    private Double promedio;
+
+    @ReadOnly
     private LocalDate fechaRespuesta = LocalDate.now();
 
     @ReadOnly
     private Boolean alertaInsatisfaccion;
 
 
-    @PrePersist
-    @PreUpdate
-    protected void calcularLogica(){
+
+    @PostPersist
+    @PostUpdate
+    protected void actualizarEncuesta(){
+        if(reserva != null){
+            this.cliente = reserva.getCliente();
+        }
+
         this.fechaRespuesta = LocalDate.now();
-
         int puntaje = 0;
-        int totalCampos = 0;
+        int total = 0;
 
-        if (calificacionGeneral != null) { puntaje += calificacionGeneral; totalCampos++; }
-        if (comida != null) { puntaje += comida; totalCampos++; }
-        if (atencion != null) { puntaje += atencion; totalCampos++; }
-        if (tiempoServicio != null) { puntaje += tiempoServicio; totalCampos++; }
-        if (ambiente != null) { puntaje += ambiente; totalCampos++; }
+        if(calificacionGeneral != null){ puntaje += calificacionGeneral; total++; }
+        if(comida != null){ puntaje += comida; total++; }
+        if(atencion != null){ puntaje += atencion; total++; }
+        if(tiempoServicio != null){ puntaje += tiempoServicio; total++; }
+        if(ambiente != null){ puntaje += ambiente; total++; }
 
-        double promedio = totalCampos > 0 ? (double) puntaje / totalCampos : 5;
-
+        double promedio = total > 0 ? (double) puntaje / total : 5;
         this.alertaInsatisfaccion = promedio <= 2.5;
     }
 
@@ -97,6 +107,7 @@ public class EncuestaSatisfaccion extends Auditable {
     private boolean isClienteCorrecto() {
         return reserva == null || cliente == null ||
                 reserva.getCliente().getId().equals(cliente.getId());
+
     }
 }
 

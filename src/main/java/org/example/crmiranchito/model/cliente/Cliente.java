@@ -11,6 +11,9 @@ import org.example.crmiranchito.model.reserva.Reserva;
 import org.openxava.annotations.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.AssertTrue;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @Entity
@@ -20,7 +23,7 @@ import java.util.List;
 @Tab(properties = "nombre, correo, telefono, estado")
 @View(members =
 "Datos Personales { nombre; correo; telefono; fechaNacimiento; preferencias } " +
-"Estado { estado } ")
+"Estado { estado } " )
 
 public class Cliente extends Auditable {
 
@@ -47,17 +50,16 @@ public class Cliente extends Auditable {
     private String preferencias;
 
     @Enumerated(EnumType.STRING)
-    @ReadOnly
     private EstadoCliente estado = EstadoCliente.ACTIVO;
 
-    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
-    private List<Reserva> reservas;
+    @AssertTrue(message = "La fecha de nacimiento no puede ser en el futuro")
+    private boolean isFechaNacimientoValida(){
 
-    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
-    private List<Interaccion> interacciones;
-
-    @ManyToMany(mappedBy = "clientes", fetch = FetchType.LAZY)
-    private List<Promocion> promociones;
+        if(fechaNacimiento == null)
+            return true;
+        LocalDate fecha = fechaNacimiento.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return !fecha.isAfter(LocalDate.now());
+    }
 
 
 }

@@ -4,13 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.crmiranchito.enums.CanalComunicacion;
 import org.example.crmiranchito.enums.EstadoReserva;
+
 import org.example.crmiranchito.listeners.ReservaListener;
 import org.example.crmiranchito.model.Auditable;
 import org.example.crmiranchito.model.usuario.Usuario;
 import org.example.crmiranchito.model.cliente.Cliente;
 import org.openxava.annotations.*;
 
-import javax.persistence.PrePersist;
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
@@ -19,16 +19,17 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-@EntityListeners(ReservaListener.class)
 @Getter
 @Setter
+@EntityListeners(ReservaListener.class)
 
-@Tab(properties = "cliente.nombre, fechaReserva, horaReserva, cantidadPersonas, mesa.numero, estado")
 @View(members =
 "Cliente { cliente } " +
 "Reserva { fechaReserva; horaReserva; cantidadPersonas; canal } " +
 "Mesa { mesa } " +
 "Control { estado; usuario; createdOn }")
+
+@Tab(properties = "cliente.nombre, fechaReserva, horaReserva, cantidadPersonas, mesa.numero, estado")
 
 
 
@@ -36,7 +37,7 @@ public class Reserva extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Required
@@ -65,10 +66,6 @@ public class Reserva extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Usuario usuario;
-
-    @ReadOnly
-    private LocalDate fechaCreacion;
-
 
     @AssertTrue(message = "La fecha y hora de la reserva no puede ser en el pasado")
     private boolean isFechaHoraValida() {
