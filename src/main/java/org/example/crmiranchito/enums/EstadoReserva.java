@@ -6,5 +6,7 @@ public enum EstadoReserva {
     CONFIRMADA,
     CANCELADA,
     COMPLETADA,
-    NO_SHOW
+    NO_SHOW,
+    TERMINADA,
+    EXPIRADA
 }

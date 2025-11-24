@@ -20,7 +20,7 @@ import java.util.List;
 "Datos { titulo; descripcion; imagen } " +
 "Vigencia { fechaInicio; fechaFin } " )
 
-@Tab(properties = "nombre, fechaInicio, fechaFin")
+@Tab(properties = "titulo, fechaInicio, fechaFin")
 
 public class Promocion extends Auditable {
 
@@ -44,15 +44,14 @@ public class Promocion extends Auditable {
     private LocalDate fechaFin;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "cliente Promocion",
+    @JoinTable(name = "cliente_Promocion",
     joinColumns = @JoinColumn(name = "promocion_id"),
     inverseJoinColumns = @JoinColumn(name = "cliente_id")
     )
 
 
-    //@ListProperties("nombre, telefono, correo, estado")
-    //private List<Cliente> clientes;
+    @ListProperties("nombre, telefono, correo, estado")
+    private List<Cliente> clientes;
 
     @AssertTrue( message = "La fecha fin debe ser posterior a la fecha de inicio")
     private boolean isFechasValidas() {

@@ -5,5 +5,8 @@ public enum EstadoMesa {
     DISPONIBLE,
     OCUPADA,
     RESERVADA,
-    EN_LIMPIEZA
+    EN_LIMPIEZA,
+    ACTIVA,
+    CANCELADA
+
 }
