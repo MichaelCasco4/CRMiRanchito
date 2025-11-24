@@ -1,113 +1,50 @@
 package org.example.crmiranchito.model.encuesta;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import org.example.crmiranchito.model.Auditable;
-import org.example.crmiranchito.model.cliente.Cliente;
-import org.example.crmiranchito.model.reserva.Reserva;
-import org.hibernate.validator.constraints.Range;
-import org.openxava.annotations.*;
+import org.openxava.annotations.DefaultValueCalculator;
+import org.openxava.annotations.ReadOnly;
+import org.openxava.annotations.Stereotype;
+import org.openxava.annotations.View;
+import org.openxava.calculators.CurrentDateCalculator;
 
 import javax.persistence.*;
-import javax.validation.constraints.AssertTrue;
-import java.time.LocalDate;
-
-import javax.persistence.PostPersist;
-import javax.persistence.PostUpdate;
+import java.util.Date;
 
 @Entity
+@Table(name = "encuesta_satisfaccion")
 @Getter
 @Setter
-
-@Tab(properties =
-" reserva.id, cliente.nombre, calificacionGeneral, fechaRespuesta, alertaInsatisfaccion")
 @View(members =
-"Datos { reserva } " +
-"Cliente { cliente } " +
-"Puntuacion { calificacionGeneral; comida; atencion; tiempoServicio; ambiente; recomendaciones } " +
-"Comentario { comentario } " +
-"Estado { fechaRespuesta; alertaInsatisfaccion } ")
-
+        "Datos { fecha, usuarioId }\n" +
+                "Reseña { comida; servicio; ambiente; tiempo; comentario }"
+)
 public class EncuestaSatisfaccion extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Required
-    @ReferenceView("Reserva")
-    private Reserva reserva;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Required
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    @DefaultValueCalculator(CurrentDateCalculator.class)
     @ReadOnly
-    private Cliente cliente;
+    private Date fecha;
 
-    @Range(min = 1, max = 5)
-    @Required
-    private Integer calificacionGeneral;
+    @Column(name = "usuario_id")
+    private Long usuarioId;
 
-    @Range(min = 1, max = 5)
-    @Required
     private Integer comida;
-
-    @Range(min = 1, max = 5)
-    @Required
-    private Integer atencion;
-
-    @Range(min = 1, max = 5)
-    @Required
-    private Integer tiempoServicio;
-
-    @Range(min = 1, max = 5)
-    @Required
+    private Integer servicio;
     private Integer ambiente;
+    private Integer tiempo;
 
-    private Boolean recomendaciones;
-
+    @Lob
+    @Column(length = 4000)
     @Stereotype("MEMO")
-    private  String comentario;
+    private String comentario;
 
-    @ReadOnly
-    private Double promedio;
-
-    @ReadOnly
-    private LocalDate fechaRespuesta = LocalDate.now();
-
-    @ReadOnly
-    private Boolean alertaInsatisfaccion;
-
-
-
-    @PostPersist
-    @PostUpdate
-    protected void actualizarEncuesta(){
-        if(reserva != null){
-            this.cliente = reserva.getCliente();
-        }
-
-        this.fechaRespuesta = LocalDate.now();
-        int puntaje = 0;
-        int total = 0;
-
-        if(calificacionGeneral != null){ puntaje += calificacionGeneral; total++; }
-        if(comida != null){ puntaje += comida; total++; }
-        if(atencion != null){ puntaje += atencion; total++; }
-        if(tiempoServicio != null){ puntaje += tiempoServicio; total++; }
-        if(ambiente != null){ puntaje += ambiente; total++; }
-
-        double promedio = total > 0 ? (double) puntaje / total : 5;
-        this.alertaInsatisfaccion = promedio <= 2.5;
-    }
-
-
-    @AssertTrue(message = "El cliente debe de coincidir con el cliente de la reserva")
-    private boolean isClienteCorrecto() {
-        return reserva == null || cliente == null ||
-                reserva.getCliente().getId().equals(cliente.getId());
-
-    }
+    // Note: removed duplicate @PrePersist method because it's already defined in Auditable.
 }
 

@@ -1,6 +1,5 @@
 package org.example.crmiranchito.model.comunicacion;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import org.example.crmiranchito.model.Auditable;
@@ -12,9 +11,10 @@ import org.openxava.annotations.View;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "canal_comunicacion")
 @Getter
 @Setter
-@View(members = "Canal { nombre } ")
+@View(members = "Canal { nombre }")
 @Tabs(@Tab(properties = "nombre"))
 public class CanalComunicacion extends Auditable {
 
@@ -22,7 +22,7 @@ public class CanalComunicacion extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
     @Required
-    private org.example.crmiranchito.enums.CanalComunicacion nombre;
+    @Column(name = "nombre", length = 100, nullable = false)
+    private String nombre;
 }

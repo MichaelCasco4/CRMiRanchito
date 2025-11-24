@@ -1,9 +1,8 @@
-package org.example.crmiranchito.model;
 
+package org.example.crmiranchito.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.openxava.annotations.ReadOnly;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -16,34 +15,27 @@ import java.time.LocalDateTime;
 @Setter
 public abstract class Auditable {
 
-    @ReadOnly
-    @Column(length=100)
-    private String createdBy;
-
-    @ReadOnly
+    @Column(name = "created_on", updatable = false)
     private LocalDateTime createdOn;
 
-    @ReadOnly
-    @Column(length = 100)
-    private String modifiedBy;
+    @Column(name = "created_by", length = 100, updatable = false)
+    private String createdBy;
 
-    @ReadOnly
+    @Column(name = "modified_on")
     private LocalDateTime modifiedOn;
 
+    @Column(name = "modified_by", length = 100)
+    private String modifiedBy;
+
     @PrePersist
-    protected void onCreate(){
-
+    protected void onCreate() {
         this.createdOn = LocalDateTime.now();
-        this.modifiedOn = this.createdOn;
-        // TODO: asignar createdBy desde el contexto de seguridad
-        // this.modifiedBy = SecurityUtils.getCurrentUsername();
-
     }
 
     @PreUpdate
-    protected void onUpdate(){
+    protected void onUpdate() {
         this.modifiedOn = LocalDateTime.now();
-        // TODO: asignar modifiedBy desde el contexto de seguridad
-        // this,modifiedBy = SecurityUtils.getCurrentUsername();
     }
 }
+
+

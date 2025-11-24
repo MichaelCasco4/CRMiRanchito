@@ -1,10 +1,10 @@
+// java
 package org.example.crmiranchito.model.reserva;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.example.crmiranchito.enums.CanalComunicacion;
 import org.example.crmiranchito.enums.EstadoReserva;
-
 import org.example.crmiranchito.listeners.ReservaListener;
 import org.example.crmiranchito.model.Auditable;
 import org.example.crmiranchito.model.usuario.Usuario;
@@ -22,17 +22,12 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @EntityListeners(ReservaListener.class)
-
-@View(members =
-"Cliente { cliente } " +
-"Reserva { fechaReserva; horaReserva; cantidadPersonas; canal } " +
-"Mesa { mesa } " +
-"Control { estado; usuario; createdOn }")
-
+@View(name = "Reserva", members =
+        "Cliente { cliente } " +
+                "Reserva { fechaReserva; horaReserva; cantidadPersonas; canal } " +
+                "Mesa { mesa } " +
+                "Control { estado; usuario; createdOn }")
 @Tab(properties = "cliente.nombre, fechaReserva, horaReserva, cantidadPersonas, mesa.numero, estado")
-
-
-
 public class Reserva extends Auditable {
 
     @Id
@@ -78,10 +73,11 @@ public class Reserva extends Auditable {
     @AssertTrue(message = "Cantidad excede capacidad de la mesa")
     private boolean isCantidadPersonasValida() {
         return mesa == null || mesa.getCapacidad() == null ||
-            cantidadPersonas == null ||
-                    cantidadPersonas <= mesa.getCapacidad();
-        }
+                cantidadPersonas == null ||
+                cantidadPersonas <= mesa.getCapacidad();
+    }
 }
+
 
 
 
