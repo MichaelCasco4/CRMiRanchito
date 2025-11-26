@@ -8,6 +8,7 @@ import org.example.crmiranchito.model.cliente.Cliente;
 import org.example.crmiranchito.model.reserva.Reserva;
 import org.hibernate.validator.constraints.Range;
 import org.openxava.annotations.*;
+import org.openxava.jpa.XPersistence;
 
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
@@ -26,6 +27,7 @@ import javax.persistence.PostUpdate;
 "Datos { reserva } " +
 "Cliente { cliente } " +
 "Puntuacion { calificacionGeneral; comida; atencion; tiempoServicio; ambiente; recomendaciones } " +
+"Promedio { promedio } " +
 "Comentario { comentario } " +
 "Estado { fechaRespuesta; alertaInsatisfaccion } ")
 
@@ -37,7 +39,6 @@ public class EncuestaSatisfaccion extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Required
-    @ReferenceView("Reserva")
     private Reserva reserva;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,22 +46,27 @@ public class EncuestaSatisfaccion extends Auditable {
     @ReadOnly
     private Cliente cliente;
 
+    @Stereotype("RATING")
     @Range(min = 1, max = 5)
     @Required
     private Integer calificacionGeneral;
 
+    @Stereotype("RATING")
     @Range(min = 1, max = 5)
     @Required
     private Integer comida;
 
+    @Stereotype("RATING")
     @Range(min = 1, max = 5)
     @Required
     private Integer atencion;
 
+    @Stereotype("RATING")
     @Range(min = 1, max = 5)
     @Required
     private Integer tiempoServicio;
 
+    @Stereotype("RATING")
     @Range(min = 1, max = 5)
     @Required
     private Integer ambiente;
@@ -71,7 +77,8 @@ public class EncuestaSatisfaccion extends Auditable {
     private  String comentario;
 
     @ReadOnly
-    private Double promedio;
+    @Stereotype("RATING")
+    private Integer promedio;
 
     @ReadOnly
     private LocalDate fechaRespuesta = LocalDate.now();
@@ -79,27 +86,23 @@ public class EncuestaSatisfaccion extends Auditable {
     @ReadOnly
     private Boolean alertaInsatisfaccion;
 
-
-
     @PostPersist
     @PostUpdate
     protected void actualizarEncuesta(){
+
         if(reserva != null){
             this.cliente = reserva.getCliente();
         }
 
         this.fechaRespuesta = LocalDate.now();
-        int puntaje = 0;
-        int total = 0;
 
-        if(calificacionGeneral != null){ puntaje += calificacionGeneral; total++; }
-        if(comida != null){ puntaje += comida; total++; }
-        if(atencion != null){ puntaje += atencion; total++; }
-        if(tiempoServicio != null){ puntaje += tiempoServicio; total++; }
-        if(ambiente != null){ puntaje += ambiente; total++; }
+        int puntaje = calificacionGeneral + comida + atencion + tiempoServicio + ambiente;
+        int total = 5;
+        double promdioCalc = (double)  puntaje / total;
 
-        double promedio = total > 0 ? (double) puntaje / total : 5;
-        this.alertaInsatisfaccion = promedio <= 2.5;
+        this.promedio = (int) Math.round(promdioCalc);
+        this.alertaInsatisfaccion = this.promedio <= 2;
+
     }
 
 
@@ -108,6 +111,21 @@ public class EncuestaSatisfaccion extends Auditable {
         return reserva == null || cliente == null ||
                 reserva.getCliente().getId().equals(cliente.getId());
 
+    }
+
+    @AssertTrue(message = "Esta reserva ya tiene una encuesta registrada")
+    private boolean isPrimeraEncuesta(){
+
+        if(reserva == null)
+            return true;
+
+        Long count = XPersistence.getManager()
+                .createQuery("SELECT COUNT(e) FROM EncuestaSatisfaccion e WHERE e.reserva = :reserva AND e.id <> :id", Long.class)
+                .setParameter("reserva", reserva)
+                .setParameter("id", id == null ? - 1L : id)
+                .getSingleResult();
+
+        return count == 0;
     }
 }
 

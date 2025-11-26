@@ -28,7 +28,7 @@ import java.time.LocalTime;
 "Cliente { cliente } " +
 "Reserva {fechaReserva; horaReserva; duracionMinutos; cantidadPersonas; canal } " +
 "Acciones { asignarMesa } " +
-"Mesa { mesa } " +
+"Mesa Asignada { mesa } " +
 "Control { estado; usuario }" )
 
 @Tab(properties = "cliente.nombre, fechaReserva, horaReserva, cantidadPersonas, mesa.numero, estado")

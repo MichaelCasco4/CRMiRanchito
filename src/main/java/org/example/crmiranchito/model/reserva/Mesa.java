@@ -10,14 +10,13 @@ import org.example.crmiranchito.model.Auditable;
 import org.openxava.annotations.*;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "mesa")
+@Table(name = " mesa ")
 @Tab(properties = "numero, capacidad, area, estado")
 @View(members =
 "Datos Mesa { numero; capacidad; area; estado } " )
@@ -44,10 +43,6 @@ public class Mesa extends Auditable {
     @Required
     @Enumerated(EnumType.STRING)
     private EstadoMesa estado;
-
-    //@OneToMany(mappedBy = "mesa", fetch = FetchType.LAZY)
-    //@ListProperties("fechaReserva, horaReserva, cliente.nombre, estado")
-    //private List<Reserva> reservas;
 
 
 }

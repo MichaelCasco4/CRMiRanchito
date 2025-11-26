@@ -7,7 +7,6 @@ import org.example.crmiranchito.model.reserva.Mesa;
 import org.example.crmiranchito.model.reserva.Reserva;
 import org.openxava.jpa.XPersistence;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Timer;
@@ -17,25 +16,31 @@ import java.util.TimerTask;
 public class EstadoMesaSch {
 
     private static final int DURACION_RESERVA = 90;
-    private static final int DURACION_RESERVAMAX = 60;
+    private static final int ANTICIPACION_RESERVA = 60;
 
 
     public EstadoMesaSch() {
 
-        Timer timer = new Timer(true);
-
-        timer.scheduleAtFixedRate(new TimerTask() {
+        new Timer(true).scheduleAtFixedRate(new TimerTask() {
 
             @Override
-            @Transactional
             public void run() {
-                actualizarEstados();
-            }
-        }, 0, 60 * 1000);
+                try{
+                    XPersistence.getManager().getTransaction().begin();
+                    actualizarEstados();
+                    XPersistence.getManager().getTransaction().commit();
+                }
+                catch (Exception e){
+                    if(XPersistence.getManager().getTransaction().isActive()){
+                        XPersistence.getManager().getTransaction().rollback();
+                    }
 
+                    System.err.println("Error Actualizando estado de mesas: " + e.getMessage());
+                }
+            }
+        }, 0,60_000);
     }
 
-    @Transactional
     private void actualizarEstados() {
 
         List<Mesa> mesas = XPersistence.getManager()
@@ -44,48 +49,45 @@ public class EstadoMesaSch {
 
         LocalDateTime ahora = LocalDateTime.now();
 
-        for (Mesa mesa : mesas) {
-
+        for(Mesa mesa : mesas) {
 
             List<Reserva> reservas = XPersistence.getManager()
                     .createQuery("SELECT r FROM Reserva r " +
-                                    "WHERE r.mesa = :mesa" +
-                                    " AND r.estado <> 'CANCELADA'", Reserva.class)
+                            "WHERE r. mesa = :mesa " +
+                            "AND r.estado <> :cancelada " +
+                            "ORDER BY r.fechaReserva ASC, r.horaReserva ASC",
+                            Reserva.class)
                     .setParameter("mesa", mesa)
+                    .setParameter("cancelada", EstadoReserva.CANCELADA)
                     .getResultList();
 
             if(reservas.isEmpty()) {
-                mesa.setEstado(EstadoMesa.DISPONIBLE);
-                XPersistence.getManager().merge(mesa);
+
+                cambiar(mesa, EstadoMesa.DISPONIBLE);
                 continue;
-            }
-
-            Reserva res = reservas.get(0);
-            LocalDateTime inicio = LocalDateTime.of(res.getFechaReserva(), res.getHoraReserva());
-            LocalDateTime reservaDesde = inicio.minusMinutes(DURACION_RESERVAMAX);
-            LocalDateTime fin = inicio.plusMinutes(DURACION_RESERVA);
-
-            if(ahora.isAfter(fin)) {
-
-                mesa.setEstado(EstadoMesa.DISPONIBLE);
-            } else if (ahora.isAfter(inicio)) {
-
-                mesa.setEstado(EstadoMesa.OCUPADA);
-
-            } else if (ahora.isAfter(reservaDesde)) {
-
-                mesa.setEstado(EstadoMesa.RESERVADA);
-
-            } else {
-
-                mesa.setEstado(EstadoMesa.DISPONIBLE);
 
             }
 
-            XPersistence.getManager().merge(mesa);
+            Reserva r = reservas.get(0);
+            LocalDateTime ini = LocalDateTime.of(r.getFechaReserva(), r.getHoraReserva());
+            LocalDateTime fin = ini.plusMinutes(DURACION_RESERVA);
+            LocalDateTime alerta = ini.minusMinutes(ANTICIPACION_RESERVA);
+
+            if(ahora.isAfter(fin)) cambiar(mesa, EstadoMesa.DISPONIBLE);
+            else if (ahora.isAfter(ini)) cambiar(mesa, EstadoMesa.OCUPADA);
+            else if (ahora.isAfter(alerta)) cambiar(mesa, EstadoMesa.RESERVADA);
+            else cambiar(mesa, EstadoMesa.DISPONIBLE);
 
         }
     }
+
+    private void cambiar(Mesa mesa, EstadoMesa estado) {
+        if(mesa.getEstado() != estado) {
+            mesa.setEstado(estado);
+            XPersistence.getManager().merge(mesa);
+        }
+    }
+
 }
 
 

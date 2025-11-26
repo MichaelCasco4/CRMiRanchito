@@ -4,6 +4,10 @@
 
 <web-app>
   <display-name>OpenXava Application</display-name>
+
+    <listener>
+        <listener-class>org.example.crmiranchito.scheduler.EstadoMesaSch</listener-class>
+    </listener>
   
   <!-- To be compliant with OWASP -->
   <error-page>
