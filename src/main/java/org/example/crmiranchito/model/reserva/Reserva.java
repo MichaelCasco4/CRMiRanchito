@@ -27,7 +27,6 @@ import java.time.LocalTime;
 @View(members =
 "Cliente { cliente } " +
 "Reserva {fechaReserva; horaReserva; duracionMinutos; cantidadPersonas; canal } " +
-"Acciones { asignarMesa } " +
 "Mesa Asignada { mesa } " +
 "Control { estado; usuario }" )
 
