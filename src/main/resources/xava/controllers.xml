@@ -23,7 +23,26 @@ https://github.com/openxava/openxava/blob/master/openxavatest/src/main/resources
     <object name="CRM_activeYear" class="java.lang.Integer" value="2015" 
     	    scope="global"/>    
     -->
-    
+    <controller name="SignIn">
+        <action name="init" on-init="true" hidden="true"
+                class="com.openxava.naviox.actions.InitSignInAction"/>
+        <action name="signIn"
+                class="org.example.crmiranchito.actions.SignInAction"/>
+    </controller>
+
+    <controller name="Seguridad">
+        <action name="cambiarCredenciales"
+                class="org.example.crmiranchito.actions.CambiarCredencialesAction"/>
+    </controller>
+
+    <controller name="Reserva">
+        <action name="asignarMesa" class="org.example.crmiranchito.actions.AsignarMesa"/>
+        <action name="buscarMesasDisponibles" class="org.example.crmiranchito.actions.BuscarMesasDisponibles"/>
+    </controller>
+
+
+
+
     <!-- Controller:
     <controller name="Teacher">
     	<extends controller="Typical"/>

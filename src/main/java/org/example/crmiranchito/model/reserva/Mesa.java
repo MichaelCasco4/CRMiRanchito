@@ -16,10 +16,16 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = " mesa ")
+
+@Table(name = "Mesa")
+
 @Tab(properties = "numero, capacidad, area, estado")
+
 @View(members =
 "Datos Mesa { numero; capacidad; area; estado } " )
+
+@View(name = "Simple",
+members = "numero, capacidad")
 
 
 public class Mesa extends Auditable {
