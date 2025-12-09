@@ -30,7 +30,15 @@ https://github.com/openxava/openxava/blob/master/openxavatest/src/main/resources
                 class="org.example.crmiranchito.actions.SignInAction"/>
     </controller>
 
+
+
     <controller name="Reserva">
+
+        <action name="guardarReserva"
+                class="org.example.crmiranchito.actions.MiSaveReservaAction"
+                label="Guardar"
+                icon="save"
+                mode="detail"/>
 
         <action name="asignarMesa"
                 class="org.example.crmiranchito.actions.AsignarMesa"
@@ -73,6 +81,9 @@ https://github.com/openxava/openxava/blob/master/openxavatest/src/main/resources
                 mode="detail"
                 icon="chart-bar"/>
     </controller>
+
+
+
 
 
 

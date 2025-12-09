@@ -40,9 +40,8 @@
         <controller name="ReporteSatisfaccion"/>
     </module>
 
-
-    <module name="Interaccion">
-        <model name="Interaccion"/>
+    <module name="Interacion">
+        <model name="Interacion"/>
         <controller name="Typical"/>
     </module>
 

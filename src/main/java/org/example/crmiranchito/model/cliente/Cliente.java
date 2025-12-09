@@ -5,12 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.crmiranchito.enums.EstadoCliente;
 import org.example.crmiranchito.model.Auditable;
+import org.example.crmiranchito.model.interaccion.Interacion;
 import org.openxava.annotations.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collection;
 
 @Entity
 @Getter
@@ -49,6 +51,10 @@ public class Cliente extends Auditable {
     @Column(length = 20)
     @Required
     private EstadoCliente estado = EstadoCliente.ACTIVO;
+
+    @OneToMany(mappedBy = "cliente")
+    @ListProperties("fechaHora, canal, asunto, usuario.username")
+    private Collection<Interacion> interaciones;
 
     @AssertTrue(message = "La fecha de nacimiento no puede ser en el futuro")
     private boolean isFechaNacimientoValida(){
