@@ -17,8 +17,7 @@ import java.time.ZoneId;
 @Setter
 
 @View(members =
-"Datos Personales { nombre; correo; telefono; fechaNacimiento; preferencias } " +
-"Estado { estado } " )
+"Datos Personales { nombre; correo; telefono; fechaNacimiento; estado; preferencias } ")
 
 @Tab(properties = "nombre, correo, telefono, estado")
 
@@ -47,6 +46,8 @@ public class Cliente extends Auditable {
     private String preferencias;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    @Required
     private EstadoCliente estado = EstadoCliente.ACTIVO;
 
     @AssertTrue(message = "La fecha de nacimiento no puede ser en el futuro")

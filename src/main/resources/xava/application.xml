@@ -10,6 +10,7 @@
     <module name="Usuario">
         <model name="Usuario"/>
         <controller name="Typical"/>
+        <controller name="Usuario"/>
     </module>
 
     <module name="Cliente">
@@ -31,26 +32,19 @@
     <module name="Promocion">
         <model name="Promocion"/>
         <controller name="Typical"/>
-
     </module>
+
+    <module name="ReporteSatisfaccion">
+        <model name="ReporteSatisfaccion"/>
+        <controller name="Typical"/>
+        <controller name="ReporteSatisfaccion"/>
+    </module>
+
 
     <module name="Interaccion">
         <model name="Interaccion"/>
         <controller name="Typical"/>
     </module>
-
-    <module name="EncuestaSatisfaccion">
-        <model name="EncuestaSatisfaccion"/>
-        <controller name="Typical"/>
-    </module>
-
-    <module name="Configuracion">
-        <model name="Configuracion"/>
-        <controller name="Typical"/>
-        <controller name="Seguridad"/>
-    </module>
-
-
 
 </application>
 

@@ -15,6 +15,9 @@
         <class>org.example.crmiranchito.model.reserva.Reserva</class>
         <class>org.example.crmiranchito.model.cliente.Cliente</class>
         <class>org.example.crmiranchito.model.usuario.Usuario</class>
+        <class>org.example.crmiranchito.model.encuesta.EncuestaSatisfaccion</class>
+        <class>org.example.crmiranchito.model.interaccion.Interaccion</class>
+        <class>org.example.crmiranchito.model.promocion.Promocion</class>
 
         <class>org.openxava.web.editors.DiscussionComment</class>
     	<class>com.openxava.naviox.model.ConfigurationRecord</class>

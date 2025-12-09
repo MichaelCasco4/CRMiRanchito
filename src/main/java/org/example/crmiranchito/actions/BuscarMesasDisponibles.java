@@ -12,7 +12,6 @@ import java.util.List;
 public class BuscarMesasDisponibles extends ViewBaseAction {
 
     @Override
-    @SuppressWarnings("unchecked")
     public void execute() {
         LocalDate fecha = (LocalDate) getView().getValue("fechaReserva");
         LocalTime hora = (LocalTime) getView().getValue("horaReserva");
@@ -23,20 +22,21 @@ public class BuscarMesasDisponibles extends ViewBaseAction {
             return;
         }
 
-        Query query = XPersistence.getManager().createQuery(
-                "SELECT m FROM Mesa m WHERE m.capacidad >= :cap ORDER BY m.capacidad ASC"
+        Query q = XPersistence.getManager().createQuery(
+                "SELECT m FROM Mesa m WHERE m.capacidad >= :cap ORDER BY m.capacidad "
         );
 
-        query.setParameter("cap", cantidad);
+        q.setParameter("cap", cantidad);
 
-        List<Mesa> mesas = (List<Mesa>) query.getResultList();
+        List<Mesa> mesas = q.getResultList();
 
         if(mesas.isEmpty()){
             addError("No hay mesas disponibles para esos criterios");
         } else {
 
             Mesa mesa = mesas.get(0);
-            getView().setValue("mesa", mesa.getId());
+
+            getView().setValue("mesa.id", mesa.getId());
             addMessage("Mesa sugerida: " + mesa.getNumero() + " (Capacidad: " + mesa.getCapacidad() + ")");
 
         }
