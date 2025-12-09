@@ -6,5 +6,6 @@ public enum TipoInteraccion {
     RECLAMO,
     SEGUIMIENTO,
     PROMOCION,
-    RECORDATORIO_RESERVA
+    RECORDATORIO_RESERVA,
+    SATISFACCION
 }

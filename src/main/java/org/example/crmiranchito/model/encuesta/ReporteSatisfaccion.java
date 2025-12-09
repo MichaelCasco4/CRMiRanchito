@@ -45,15 +45,8 @@ public class ReporteSatisfaccion {
     @ReadOnly
     private String graficoCategorias;
 
-
-    /* ==================================================
-       FUNCIÓN PARA CARGAR Y GENERAR LOS GRÁFICOS
-       ================================================== */
     public void cargarGraficos() {
 
-        /* ==================================================
-           1) PROMEDIO POR CLIENTE
-           ================================================== */
         List<Object[]> clientes = XPersistence.getManager()
                 .createQuery(
                         "SELECT r.cliente.nombre, " +
@@ -68,9 +61,9 @@ public class ReporteSatisfaccion {
 
         for (Object[] row : clientes) {
             json1.append(",['")
-                    .append(row[0])      // nombre con comillas
+                    .append(row[0])
                     .append("',")
-                    .append(row[1])      // NUMERO SIN COMILLAS
+                    .append(row[1])
                     .append("]");
         }
 
@@ -78,9 +71,6 @@ public class ReporteSatisfaccion {
         graficoPromedioCliente = json1.toString();
 
 
-        /* ==================================================
-           2) PROMEDIO POR MES
-           ================================================== */
         List<Object[]> meses = XPersistence.getManager()
                 .createQuery(
                         "SELECT MONTH(e.fechaRespuesta), " +
@@ -105,9 +95,6 @@ public class ReporteSatisfaccion {
         graficoPromedioMensual = json2.toString();
 
 
-        /* ==================================================
-           3) PROMEDIO POR CATEGORÍA
-           ================================================== */
         Object[] categorias = (Object[]) XPersistence.getManager()
                 .createQuery(
                         "SELECT AVG(e.comida), AVG(e.atencion), AVG(e.ambiente) " +

@@ -7,6 +7,7 @@ import org.example.crmiranchito.enums.EstadoReserva;
 
 import org.example.crmiranchito.model.Auditable;
 import org.example.crmiranchito.model.encuesta.EncuestaSatisfaccion;
+import org.example.crmiranchito.model.interaccion.Interacion;
 import org.example.crmiranchito.model.usuario.Usuario;
 import org.example.crmiranchito.model.cliente.Cliente;
 import org.hibernate.validator.constraints.Range;
@@ -20,20 +21,21 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
 
+
+
 @View(members =
 "Cliente { cliente } " +
 "Reserva { fechaReserva; horaReserva; duracionMinutos; cantidadPersonas; canal } " +
 "Mesa Asignada { mesa } " +
 "Control { estado; usuario } " +
-"Encuestas { encuestas } ")
-
+"Encuestas { encuestas } " +
+"Interaciones { interaciones } ")
 @Tab(properties = "cliente.nombre, fechaReserva, horaReserva, cantidadPersonas, mesa.numero, estado")
 
 public class Reserva extends Auditable {
@@ -76,6 +78,10 @@ public class Reserva extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @DescriptionsList(descriptionProperties = "username")
     private Usuario usuario;
+
+    @OneToMany(mappedBy = "reserva")
+    @ListProperties("fechaHora, canal, asunto, usuario.username")
+    private Collection<Interacion> interaciones;
 
     /*<---------------------------------------->*/
 
@@ -157,8 +163,10 @@ public class Reserva extends Auditable {
             estado = EstadoReserva.CONFIRMADA;
 
         } else if (ahora.isAfter(fin)) {
+            if(estado != EstadoReserva.TERMINADA){
 
-            estado = EstadoReserva.TERMINADA;
+                estado = EstadoReserva.TERMINADA;
+            }
 
             }
 
