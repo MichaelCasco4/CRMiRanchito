@@ -30,15 +30,51 @@ https://github.com/openxava/openxava/blob/master/openxavatest/src/main/resources
                 class="org.example.crmiranchito.actions.SignInAction"/>
     </controller>
 
-    <controller name="Seguridad">
-        <action name="cambiarCredenciales"
-                class="org.example.crmiranchito.actions.CambiarCredencialesAction"/>
+    <controller name="Reserva">
+
+        <action name="asignarMesa"
+                class="org.example.crmiranchito.actions.AsignarMesa"
+                label="Asignar Mesa"
+                icon="calendar-check"
+                mode="detail"/>
+
+        <action name="buscarMesasDisponibles"
+                class="org.example.crmiranchito.actions.BuscarMesasDisponibles"
+                label="Buscar Mesas"
+                icon="account-search"
+                mode="detail"/>
+
+        <action name="actualizarEstado"
+                class="org.example.crmiranchito.actions.ActualizarEstadoAlAbrir"
+                on-init="true"
+                hidden="true"/>
+
+
     </controller>
 
-    <controller name="Reserva">
-        <action name="asignarMesa" class="org.example.crmiranchito.actions.AsignarMesa"/>
-        <action name="buscarMesasDisponibles" class="org.example.crmiranchito.actions.BuscarMesasDisponibles"/>
+
+    <controller name="Usuario">
+
+        <action name="cambiarCredenciales"
+                class="org.example.crmiranchito.actions.CambiarCredencialesAction"
+                label="Cambiar Credenciales"
+                icon="key"
+                mode="detail"/>
+
+        <action name="guardarCredenciales"
+                class="org.example.crmiranchito.actions.GuardarCredencialesAction"
+                hidden="true"/>
     </controller>
+
+    <controller name="ReporteSatisfaccion">
+        <action name="cargarGraficos"
+                class="org.example.crmiranchito.actions.CargarGraficosReporteAction"
+                label="Cargar graficos"
+                mode="detail"
+                icon="chart-bar"/>
+    </controller>
+
+
 
 
 

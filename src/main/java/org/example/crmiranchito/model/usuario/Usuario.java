@@ -15,12 +15,21 @@ import javax.validation.constraints.NotBlank;
 @Setter
 
 @View(members = "nombre; username; password; rol; activo")
+
+@View(name = "CambiarCredenciales",
+members =
+"CambiarCredenciales { " +
+"nuevoUsername; " +
+"nuevoPassword;" +
+"confirmarPassword;" +
+"}")
 @Tab(properties = "nombre, username, rol, activo")
 
 public class Usuario extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Hidden
     private Long id;
 
     @Required
@@ -41,5 +50,16 @@ public class Usuario extends Auditable {
 
     @Hidden
     private boolean activo = true;
+
+    @Transient
+    private String nuevoUsername;
+
+    @Transient
+    @Stereotype("Password")
+    private String nuevoPassword;
+
+    @Transient
+    @Stereotype("Password")
+    private String confirmarPassword;
 
 }

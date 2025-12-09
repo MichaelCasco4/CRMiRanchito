@@ -6,10 +6,12 @@ import lombok.Setter;
 import org.example.crmiranchito.enums.TipoInteraccion;
 import org.example.crmiranchito.model.Auditable;
 import org.example.crmiranchito.model.cliente.Cliente;
+import org.example.crmiranchito.model.reserva.Reserva;
 import org.openxava.annotations.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,9 +21,11 @@ import java.time.LocalDateTime;
 "Cliente { cliente } " +
 "Canal { canal } " +
 "Detalle {tipo; detalle } " +
-"Fecha { fecha } ")
+"Fecha { fecha } " +
+"\n" +
+"Historial de Reservas del Cliente { reservasCliente }")
 
-@Tabs(@Tab(properties = "cliente.nombre, canal.nombre, tipo, fecha"))
+@Tabs(@Tab(properties = "cliente.nombre, tipo, fecha"))
 public class Interaccion extends Auditable {
 
 
@@ -31,11 +35,17 @@ public class Interaccion extends Auditable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Required
+    @DescriptionsList(descriptionProperties = "nombre")
     private Cliente cliente;
 
-    //@ManyToOne(fetch = FetchType.LAZY)
-    //@Required
-    //private CanalComunicacion canal;
+
+    @OneToMany(mappedBy = "cliente")
+    @ReadOnly
+    @ListProperties(
+            "fechaReserva, horaReserva, mesa.numero, estado, " +
+                    "encuestas.promedio"
+    )
+    private List<Reserva> reservasCliente;
 
     @Enumerated(EnumType.STRING)
     private TipoInteraccion tipo;
