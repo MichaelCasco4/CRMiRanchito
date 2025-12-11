@@ -55,7 +55,7 @@ public class Interacion extends Auditable {
     private String descripcion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @DescriptionsList(descriptionProperties = "username")
+    @DescriptionsList(descriptionProperties = "nombre")
     private Usuario usuario;
 
 

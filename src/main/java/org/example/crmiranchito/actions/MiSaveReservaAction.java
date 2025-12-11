@@ -10,20 +10,26 @@ public class MiSaveReservaAction extends SaveAction {
     @Override
     public void execute() throws Exception {
 
-        Reserva reserva = (Reserva)getView().getEntity();
+        Long id = (Long) getView().getValue("id");
 
-        if(reserva != null) {
+        Reserva reserva;
 
-            reserva.actualizarEstadoAutomatico();
+        if (id != null) {
 
-            if(reserva.getEstado() == EstadoReserva.TERMINADA) {
-
-            }
-
-            XPersistence.getManager().merge(reserva);
-            XPersistence.commit();
-
+            reserva = XPersistence.getManager().find(Reserva.class, id);
         }
+        else {
+
+            super.execute();
+            return;
+        }
+
+        reserva.aplicarLogicaClienteLlego();
+
+        XPersistence.getManager().merge(reserva);
+
+        getView().setValue("estado", reserva.getEstado().toString());
+        getView().setValue("clienteLlego", reserva.isClienteLlego());
 
         super.execute();
     }

@@ -52,12 +52,6 @@ https://github.com/openxava/openxava/blob/master/openxavatest/src/main/resources
                 icon="account-search"
                 mode="detail"/>
 
-        <action name="actualizarEstado"
-                class="org.example.crmiranchito.actions.ActualizarEstadoAlAbrir"
-                on-init="true"
-                hidden="true"/>
-
-
     </controller>
 
 
@@ -77,17 +71,10 @@ https://github.com/openxava/openxava/blob/master/openxavatest/src/main/resources
     <controller name="ReporteSatisfaccion">
         <action name="cargarGraficos"
                 class="org.example.crmiranchito.actions.CargarGraficosReporteAction"
-                label="Cargar graficos"
-                mode="detail"
-                icon="chart-bar"/>
+                label="Cargar gráficos"
+                icon="chart-bar"
+                mode="detail"/>
     </controller>
-
-
-
-
-
-
-
 
 
     <!-- Controller:

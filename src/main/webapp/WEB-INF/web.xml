@@ -5,6 +5,11 @@
 <web-app>
   <display-name>OpenXava Application</display-name>
 
+    <listener>
+        <listener-class>org.example.crmiranchito.listeners.StartupListener</listener-class>
+    </listener>
+
+
   <!-- To be compliant with OWASP -->
   <error-page>
     <error-code>404</error-code>

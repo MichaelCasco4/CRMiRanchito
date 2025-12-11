@@ -1,26 +1,15 @@
 package org.example.crmiranchito.actions;
 
-import org.example.crmiranchito.model.encuesta.ReporteSatisfaccion;
-import org.openxava.actions.ViewBaseAction;
-import org.openxava.model.MapFacade;
+import org.openxava.actions.SaveAction;
 
-import java.util.Map;
-
-public class CargarGraficosReporteAction extends ViewBaseAction {
+public class CargarGraficosReporteAction extends SaveAction {
 
     @Override
-    public void execute() throws Exception {
+    public void execute() throws Exception{
 
-        Map key = getView().getKeyValues();
+        super.execute();
+        addMessage("Graficos Actualizados correctamente");
 
-        ReporteSatisfaccion r =
-                (ReporteSatisfaccion) MapFacade.findEntity("ReporteSatisfaccion", key);
-
-        r.cargarGraficos();
-
-        getView().refresh();
-        addMessage("Gráficos actualizados correctamente");
     }
+
 }
-
-
